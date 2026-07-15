@@ -61,8 +61,11 @@ jobs:
           port: 22
           script_stop: true
           script: |
+            # 1. Stop any old app running on the port
             kill $(pgrep -f 'java -jar') || true
-            nohup java -jar ~/app/*.jar > ~/app/app.log 2>&1 < /dev/null &
-
-            sleep 3
-            exit 0  
+            
+            # 2. Kill any old screen session named "java-app"
+            screen -XS java-app quit || true
+            
+            # 3. Start a new background screen session running your jar
+            screen -d -m -S java-app java -jar ~/app/*.jar
