@@ -52,6 +52,16 @@ jobs:
           target: "~/app"
           strip_components: 1
 
+      - name: Remove old JAR
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+            host: 3.25.255.105
+            username: ubuntu
+            key: ${{ secrets.EC2_SSH_KEY }}
+            script: |
+              mkdir -p ~/app
+              rm -f ~/app/*.jar    
+
       - name: Run Application on EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -61,11 +71,22 @@ jobs:
           port: 22
           script_stop: true
           script: |
-            # 1. Stop any old app running on the port
-            kill $(pgrep -f 'java -jar') || true
-            
-            # 2. Kill any old screen session named "java-app"
+            pkill -f "java -jar" || true
+
             screen -XS java-app quit || true
-            
-            # 3. Start a new background screen session running your jar with redirected outputs
-            screen -d -m -S java-app bash -c "java -jar ~/app/*.jar > ~/app/app.log 2>&1"
+
+            sleep 2
+
+            JAR=$(ls ~/app/*.jar | head -n 1)
+
+            echo "Starting $JAR"
+
+            screen -dmS java-app bash -c "java -jar $JAR >> ~/app/app.log 2>&1"
+
+            sleep 10
+
+            echo "===== Running Java Processes ====="
+            ps -ef | grep java
+
+            echo "===== Application Log ====="
+            tail -100 ~/app/app.log
