@@ -67,5 +67,5 @@ jobs:
             # 2. Kill any old screen session named "java-app"
             screen -XS java-app quit || true
             
-            # 3. Start a new background screen session running your jar
-            screen -d -m -S java-app java -jar ~/app/*.jar
+            # 3. Start a new background screen session running your jar with redirected outputs
+            screen -d -m -S java-app bash -c "java -jar ~/app/*.jar > ~/app/app.log 2>&1"
