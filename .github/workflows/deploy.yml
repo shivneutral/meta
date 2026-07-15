@@ -45,8 +45,8 @@ jobs:
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: '54.210.xx.xx' # Replace with your EC2 IP
-          username: 'ec2-user' # Replace with your EC2 Username
+          host: '3.25.255.105' # Replace with your EC2 IP
+          username: 'ubuntu' # Replace with your EC2 Username
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "target/*.jar"
           target: "~/app"
@@ -55,8 +55,8 @@ jobs:
       - name: Run Application on EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: '54.210.xx.xx' # Replace with your EC2 IP
-          username: 'ec2-user' # Replace with your EC2 Username
+          host: '3.25.255.105' # Replace with your EC2 IP
+          username: 'ubuntu' # Replace with your EC2 Username
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             kill $(pgrep -f 'java -jar') || true
