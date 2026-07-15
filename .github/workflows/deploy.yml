@@ -42,16 +42,6 @@ jobs:
           name: java-app-jar
           path: target
 
-      - name: Copy JAR to EC2
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: '3.25.255.105' # Replace with your EC2 IP
-          username: 'ubuntu' # Replace with your EC2 Username
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "target/*.jar"
-          target: "~/app"
-          strip_components: 1
-
       - name: Remove old JAR
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -60,7 +50,17 @@ jobs:
             key: ${{ secrets.EC2_SSH_KEY }}
             script: |
               mkdir -p ~/app
-              rm -f ~/app/*.jar    
+              rm -f ~/app/*.jar      
+
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: '3.25.255.105' # Replace with your EC2 IP
+          username: 'ubuntu' # Replace with your EC2 Username
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "target/*.jar"
+          target: "~/app"
+          strip_components: 1  
 
       - name: Run Application on EC2
         uses: appleboy/ssh-action@v1.0.3
