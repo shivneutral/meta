@@ -58,6 +58,11 @@ jobs:
           host: '3.25.255.105' # Replace with your EC2 IP
           username: 'ubuntu' # Replace with your EC2 Username
           key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script_stop: true
           script: |
             kill $(pgrep -f 'java -jar') || true
-            nohup java -jar ~/app/*.jar > ~/app/app.log 2>&1 &
+            nohup java -jar ~/app/*.jar > ~/app/app.log 2>&1 < /dev/null &
+
+            sleep 3
+            exit 0  
